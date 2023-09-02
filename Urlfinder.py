@@ -35,6 +35,10 @@ filter = (
     "https://go.microsoft.com/",
     "https://cloud.yandex.",
     "https://store.steampowered",
+    "https://steamdb.info",
+    "https://steamcharts.com",
+    "https://plati.market",
+    "https://www.nexusmods.com",
 )
 
 
@@ -151,7 +155,8 @@ def main():
             "S for search\n"
             "1. Search only on Pastebin\n"
             "2. Search only on Reddit\n"
-            "3. Search on all sites\n"
+            "3. Search only on Youtube\n"
+            "4. Search on all sites\n"
             "Choice: "
         )
         if option.lower() == "s":
@@ -165,6 +170,9 @@ def main():
             site = "site:reddit.com"
             break
         elif option == "3":
+            site = "site:youtube.com"
+            break
+        elif option == "4":
             site = ""
             break
         else:
