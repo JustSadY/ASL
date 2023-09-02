@@ -213,12 +213,12 @@ def main():
 
 def exiting():
     unique_texts = set()
-    with open("links.txt", "r") as file:
+    with open("links.txt", "r", encoding="utf-8") as file:
         for line in file:
             unique_texts.add(line.strip())
     unique_text_list = list(unique_texts)
 
-    with open("links.txt", "w") as file:
+    with open("links.txt", "w", encoding="utf-8") as file:
         for text in unique_text_list:
             if not text.startswith(filter) and not text == "https://pastebin.com/":
                 file.write(text + "\n")

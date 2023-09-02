@@ -635,7 +635,6 @@ def choose_option():
 
 
 def process_data_and_save(urls, pattern, output_file, choice):
-    unique_lines = set()
     with open(output_file, "a") as file:
         for url in urls:
             print("Connecting to:", url)
