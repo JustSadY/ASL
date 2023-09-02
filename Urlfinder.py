@@ -41,7 +41,7 @@ filter = (
     "https://www.nexusmods.com",
     "https://search.aol.com/aol/",
     "https://r.search.aol.com",
-    "https://shopping.search.aol.com/search"
+    "https://shopping.search.aol.com/search",
 )
 
 
@@ -114,11 +114,14 @@ def search_yahoo(site, keyword):
     response = requests.get(Yahoo_url, timeout=10, headers=headers)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, "html.parser")
-        link_elements = soup.find_all("a")
+        link_elements = soup.find_all(
+            "span", class_="d-ib p-abs t-0 l-0 fz-14 lh-20 fc-obsidian wr-bw ls-n pb-4"
+        )
+        print(link_elements)
         for link in link_elements:
-            href = link.get("href")
-            if href and href.startswith("https://"):
-                yield href
+            href = link.get_text().replace(" › ", "/")
+            yield "https://" + href
+
 
 def search_aol(site, keyword):
     time.sleep(1)
@@ -126,11 +129,10 @@ def search_aol(site, keyword):
     response = requests.get(aol_url, timeout=10, headers=headers)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, "html.parser")
-        link_elements = soup.find_all("span", class_='fz-ms fw-m fc-12th wr-bw lh-17')
+        link_elements = soup.find_all("span", class_="fz-ms fw-m fc-12th wr-bw lh-17")
         for link in link_elements:
             href = link.get_text()
-            yield "https://"+href
-
+            yield "https://" + href
 
 
 def search_startpage(site, keyword):
@@ -153,7 +155,7 @@ def main():
         "StartPage": search_startpage,
         "Yahoo": search_yahoo,
         "Ecosia": search_ecosia,
-        "Aol": search_aol
+        "Aol": search_aol,
     }
 
     selected_search_engines = []
