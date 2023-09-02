@@ -39,6 +39,9 @@ filter = (
     "https://steamcharts.com",
     "https://plati.market",
     "https://www.nexusmods.com",
+    "https://search.aol.com/aol/",
+    "https://r.search.aol.com",
+    "https://shopping.search.aol.com/search"
 )
 
 
@@ -94,8 +97,8 @@ def search_yandex(site, keyword):
 
 def search_ecosia(site, keyword):
     time.sleep(1)
-    Bing_url = f"https://www.ecosia.org/search?q={site}+{keyword.replace(' ', '+')}"
-    response = requests.get(Bing_url, timeout=10, headers=headers)
+    ecosia_url = f"https://www.ecosia.org/search?q={site}+{keyword.replace(' ', '+')}"
+    response = requests.get(ecosia_url, timeout=10, headers=headers)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, "html.parser")
         link_elements = soup.find_all("a")
@@ -116,6 +119,18 @@ def search_yahoo(site, keyword):
             href = link.get("href")
             if href and href.startswith("https://"):
                 yield href
+
+def search_aol(site, keyword):
+    time.sleep(1)
+    aol_url = f"https://search.aol.com/aol/search?q={site}+{keyword.replace(' ', '+')}"
+    response = requests.get(aol_url, timeout=10, headers=headers)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, "html.parser")
+        link_elements = soup.find_all("span", class_='fz-ms fw-m fc-12th wr-bw lh-17')
+        for link in link_elements:
+            href = link.get_text()
+            yield "https://"+href
+
 
 
 def search_startpage(site, keyword):
@@ -138,6 +153,7 @@ def main():
         "StartPage": search_startpage,
         "Yahoo": search_yahoo,
         "Ecosia": search_ecosia,
+        "Aol": search_aol
     }
 
     selected_search_engines = []
