@@ -46,6 +46,8 @@ filter = (
     "https://shopping.search.aol.com/search",
     "https://www.yandex.com",
     "https://discord.com/",
+    "https://www.farming-simulator.com/",
+    "https://astroneer.space/"
 )
 
 
@@ -279,7 +281,7 @@ def exiting():
 
     with open("links.txt", "w", encoding="utf-8") as file:
         for text in unique_text_list:
-            if not text.startswith(filter) and not text == "https://pastebin.com/":
+            if not text.startswith(filter) and not text == "https://pastebin.com/" and "https://pastebin.com/faq":
                 file.write(text + "\n")
 
 
