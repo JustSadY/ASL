@@ -4,6 +4,8 @@ import time
 from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
 from startpage import StartPage
+from concurrent.futures import ThreadPoolExecutor
+
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36"
@@ -43,108 +45,160 @@ filter = (
     "https://r.search.aol.com",
     "https://shopping.search.aol.com/search",
     "https://www.yandex.com",
+    "https://discord.com/",
 )
 
 
 def search_ddgs(site, keyword):
     with DDGS() as ddgs:
-        for duck in ddgs.text(
-            f"{site} {keyword}",
-            region="wt-wt",
-            safesearch="off",
-            timelimit="y",
-        ):
-            yield duck["href"]
+        try:
+            print(f"Duckduckgo: {keyword}")
+            time.sleep(1)
+            for duck in ddgs.text(
+                f"{site} {keyword}",
+                region="wt-wt",
+                safesearch="off",
+                timelimit="y",
+            ):
+                output_file.write(duck["href"] + "\n")
+        except Exception as e:
+            print(f"Error occurred during Duckduckgo search: {e}")
 
 
 def search_google(site, keyword):
-    time.sleep(0.5)
-    Google_url = f"https://www.google.com/search?q={site}+{keyword.replace(' ', '+')}"
-    response = requests.get(Google_url, timeout=5, headers=headers)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, "html.parser")
-        link_elements = soup.find_all("a")
-        for link in link_elements:
-            href = link.get("href")
-            if href and href.startswith("https://"):
-                yield href
+    try:
+        print(f"Google: {keyword}")
+        time.sleep(1)
+        Google_url = (
+            f"https://www.google.com/search?q={site}+{keyword.replace(' ', '+')}"
+        )
+        response = requests.get(Google_url, timeout=5, headers=headers)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, "html.parser")
+            link_elements = soup.find_all("a")
+            for link in link_elements:
+                href = link.get("href")
+                if href and href.startswith("https://"):
+                    output_file.write(href + "\n")
+    except Exception as e:
+        print(f"Error occurred during Google search: {e}")
 
 
 def search_bing(site, keyword):
-    time.sleep(0.5)
-    Bing_url = f"https://www.bing.com/search?q={site}+{keyword.replace(' ', '+')}"
-    response = requests.get(Bing_url, timeout=5, headers=headers)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, "html.parser")
-        link_elements = soup.find_all("a")
-        for link in link_elements:
-            href = link.get("href")
-            if href and href.startswith("https://"):
-                yield href
+    try:
+        print(f"Bing: {keyword}")
+        time.sleep(1)
+        Bing_url = f"https://www.bing.com/search?q={site}+{keyword.replace(' ', '+')}"
+        response = requests.get(Bing_url, timeout=5, headers=headers)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, "html.parser")
+            link_elements = soup.find_all("a")
+            for link in link_elements:
+                href = link.get("href")
+                if href and href.startswith("https://"):
+                    output_file.write(href + "\n")
+    except Exception as e:
+        print(f"Error occurred during Google search: {e}")
 
 
 def search_yandex(site, keyword):
-    time.sleep(0.5)
-    Yandex_url = f"https://yandex.com/search/?text={site}+{keyword.replace(' ', '+')}"
-    response = requests.get(Yandex_url, timeout=5, headers=headers)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, "html.parser")
-        link_elements = soup.find_all("a")
-        for link in link_elements:
-            href = link.get("href")
-            if href and href.startswith("https://"):
-                yield href
+    try:
+        print(f"Yandex: {keyword}")
+        time.sleep(1)
+        Yandex_url = (
+            f"https://yandex.com/search/?text={site}+{keyword.replace(' ', '+')}"
+        )
+        response = requests.get(Yandex_url, timeout=5, headers=headers)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, "html.parser")
+            link_elements = soup.find_all("a")
+            for link in link_elements:
+                href = link.get("href")
+                if href and href.startswith("https://"):
+                    output_file.write(href + "\n")
+    except Exception as e:
+        print(f"Error occurred during Google search: {e}")
 
 
 def search_ecosia(site, keyword):
-    time.sleep(0.5)
-    ecosia_url = f"https://www.ecosia.org/search?q={site}+{keyword.replace(' ', '+')}"
-    response = requests.get(ecosia_url, timeout=5, headers=headers)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, "html.parser")
-        link_elements = soup.find_all("a")
-        for link in link_elements:
-            href = link.get("href")
-            if href and href.startswith("https://") and "ecosia" not in href.lower():
-                yield href
+    try:
+        print(f"Ecosia: {keyword}")
+        time.sleep(1)
+        ecosia_url = (
+            f"https://www.ecosia.org/search?q={site}+{keyword.replace(' ', '+')}"
+        )
+        response = requests.get(ecosia_url, timeout=5, headers=headers)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, "html.parser")
+            link_elements = soup.find_all("a")
+            for link in link_elements:
+                href = link.get("href")
+                if (
+                    href
+                    and href.startswith("https://")
+                    and "ecosia" not in href.lower()
+                ):
+                    output_file.write(href + "\n")
+    except Exception as e:
+        print(f"Error occurred during Ecosia search: {e}")
 
 
 def search_yahoo(site, keyword):
-    time.sleep(0.5)
-    Yahoo_url = f"https://search.yahoo.com/search?p={site}+{keyword.replace(' ', '+')}"
-    response = requests.get(Yahoo_url, timeout=5, headers=headers)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, "html.parser")
-        link_elements = soup.find_all(
-            "span", class_="d-ib p-abs t-0 l-0 fz-14 lh-20 fc-obsidian wr-bw ls-n pb-4"
+    try:
+        print(f"Yahoo: {keyword}")
+        time.sleep(1)
+        Yahoo_url = (
+            f"https://search.yahoo.com/search?p={site}+{keyword.replace(' ', '+')}"
         )
-        for link in link_elements:
-            href = link.get_text().replace(" › ", "/")
-            yield "https://" + href
+        response = requests.get(Yahoo_url, timeout=5, headers=headers)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, "html.parser")
+            link_elements = soup.find_all(
+                "span",
+                class_="d-ib p-abs t-0 l-0 fz-14 lh-20 fc-obsidian wr-bw ls-n pb-4",
+            )
+            for link in link_elements:
+                href = link.get_text().replace(" › ", "/")
+                output_file.write("https://" + href + "\n")
+    except Exception as e:
+        print(f"Error occurred during Yahoo search: {e}")
 
 
 def search_aol(site, keyword):
-    time.sleep(0.5)
-    aol_url = f"https://search.aol.com/aol/search?q={site}+{keyword.replace(' ', '+')}"
-    response = requests.get(aol_url, timeout=5, headers=headers)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, "html.parser")
-        link_elements = soup.find_all("span", class_="fz-ms fw-m fc-12th wr-bw lh-17")
-        for link in link_elements:
-            href = link.get_text()
-            yield "https://" + href
+    try:
+        print(f"Aol: {keyword}")
+        time.sleep(1)
+        aol_url = (
+            f"https://search.aol.com/aol/search?q={site}+{keyword.replace(' ', '+')}"
+        )
+        response = requests.get(aol_url, timeout=5, headers=headers)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, "html.parser")
+            link_elements = soup.find_all(
+                "span", class_="fz-ms fw-m fc-12th wr-bw lh-17"
+            )
+            for link in link_elements:
+                href = link.get_text()
+                output_file.write("https://" + href + "\n")
+    except Exception as e:
+        print(f"Error occurred during AOL search: {e}")
 
 
 def search_startpage(site, keyword):
-    time.sleep(0.5)
-    task = StartPage()
-    task.search(f"{site} {keyword}", page=1)
-    for page_num, results in task.results.items():
-        for res in results:
-            yield res["link"]
+    try:
+        print(f"Startpage: {keyword}")
+        time.sleep(1)
+        task = StartPage()
+        task.search(f"{site} {keyword}", page=1)
+        for page_num, results in task.results.items():
+            for res in results:
+                output_file.write(res["link"] + "\n")
+    except Exception as e:
+        print(f"Error occurred during StartPage search: {e}")
 
 
 def main():
+    global output_file
     config = configparser.ConfigParser()
     config.read("config.ini")
 
@@ -202,11 +256,16 @@ def main():
 
     with open("links.txt", "a", encoding="utf-8") as output_file:
         for keyword in key:
-            print(keyword)
+            with ThreadPoolExecutor(
+                max_workers=len(selected_search_engines)
+            ) as executor:
+                futures = []
+                for search_engine in selected_search_engines:
+                    future = executor.submit(search_engine, site, keyword)
+                    futures.append(future)
 
-            for search_engine in selected_search_engines:
-                for link in search_engine(site, keyword):
-                    output_file.write(link + "\n")
+                for future in futures:
+                    future.result()
 
     print("Scraping process completed.")
 
