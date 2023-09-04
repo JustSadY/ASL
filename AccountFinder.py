@@ -2,6 +2,8 @@ import re
 import requests
 import time
 from bs4 import BeautifulSoup
+from concurrent.futures import ThreadPoolExecutor
+
 
 filters = (
     "xanim:viewmodel",
@@ -633,36 +635,6 @@ def choose_option():
         else:
             print("Invalid input. Please choose 1, 2, 3, 4, or 5.")
 
-
-def process_data_and_save(urls, pattern, output_file, choice):
-    with open(output_file, "a") as file:
-        for url in urls:
-            print("Connecting to:", url)
-            time.sleep(0.5)
-            try:
-                response = requests.get(url)
-                response.raise_for_status()
-                content = response.text
-                soup = BeautifulSoup(content, "html.parser")
-                plain_text = soup.get_text()
-
-                if choice in ("3", "4"):
-                    custom_found_items = re.findall(pattern, plain_text)
-                    file.writelines(url + "\n")
-                elif choice in ("5"):
-                    custom_found_items = re.findall(pattern, plain_text)
-                    for item in custom_found_items:
-                        file.writelines(url + " " + item + "\n")
-                else:
-                    found_items = re.findall(pattern, plain_text)
-                    for item in found_items:
-                        file.writelines(item + "\n")
-
-            except requests.exceptions.RequestException:
-                print("Couldn't connect to", url)
-    print(f"Found items saved to {output_file}.")
-
-
 def exiting():
     unique_texts = set()
     with open(output_file, "r") as file:
@@ -675,12 +647,54 @@ def exiting():
                 file.write(text + "\n")
 
 
+def process_url(url, pattern, output_file, choice):
+    try:
+        print("Connecting to:", url)
+        response = requests.get(url)
+        response.raise_for_status()
+        content = response.text
+        soup = BeautifulSoup(content, "html.parser")
+        plain_text = soup.get_text()
+        time.sleep(1)
+
+        with open(output_file, "a") as file:
+            if choice in ("3", "4"):
+                if re.findall(pattern, plain_text):
+                    file.writelines(url + "\n")
+            elif choice == "5":
+                custom_found_items = re.findall(pattern, plain_text) 
+                for item in custom_found_items:
+                    file.writelines(url + " " + item + "\n")
+            else:
+                found_items = re.findall(pattern, plain_text)
+                for item in found_items:
+                    file.writelines(item + "\n")
+
+    except requests.exceptions.RequestException:
+        print("Couldn't connect to", url)
+
+def exiting(output_file, filters):
+    unique_texts = set()
+    with open(output_file, "r") as file:
+        for line in file:
+            unique_texts.add(line.strip())
+    unique_text_list = list(unique_texts)
+    with open(output_file, "w") as file:
+        for text in unique_text_list:
+            if text not in filters:
+                file.write(text + "\n")
+
 if __name__ == "__main__":
     urls = read_urls_from_file("links.txt")
     pattern, output_file, choice = choose_option()
+    
     try:
-        process_data_and_save(urls, pattern, output_file, choice)
-        exiting()
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            for url in urls:
+                executor.submit(process_url, url, pattern, output_file, choice)
+        
+        exiting(output_file, filters)
+
     except KeyboardInterrupt:
-        exiting()
-        print("Exiting")
+        exiting(output_file, filters)
+        print("Exiting due to KeyboardInterrupt")
