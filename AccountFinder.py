@@ -18,7 +18,6 @@ filters = (
     "KeyDown:",
     "SelectedKey:",
     "SelectedDisableKey:",
-    "",
     "transition-property",
     "text-transform",
     "padding",
@@ -588,6 +587,42 @@ filters = (
     "widget",
     "author",
     "blockquote",
+    "Window",
+    "block",
+    "game",
+    "text",
+    "object",
+    "block",
+    "Block",
+    "Command",
+    "Games",
+    "Game",
+    "index",
+    "image",
+    "tool",
+    "block",
+    "commons",
+    "line",
+    "GAMES",
+    "minecraft",
+    "PlayerAdded",
+    "NewFarm",
+    "Entry",
+    "Collect",
+    "overflow",
+    "block",
+    "MainSection",
+    "AutoFarm",
+    "Section",
+    "typesafe",
+    "Players",
+    "point",
+    "color",
+    "Play",
+    "GAME",
+    "display",
+    "Text",
+    "Client:"
 )
 
 
@@ -635,18 +670,6 @@ def choose_option():
             print("Invalid input. Please choose 1, 2, 3, 4, or 5.")
 
 
-def exiting():
-    unique_texts = set()
-    with open(output_file, "r") as file:
-        for line in file:
-            unique_texts.add(line.strip())
-    unique_text_list = list(unique_texts)
-    with open(output_file, "w") as file:
-        for text in unique_text_list:
-            if text not in filters:
-                file.write(text + "\n")
-
-
 def process_url(url, pattern, output_file, choice):
     try:
         print("Connecting to:", url)
@@ -678,12 +701,14 @@ def exiting(output_file, filters):
     unique_texts = set()
     with open(output_file, "r") as file:
         for line in file:
-            unique_texts.add(line.strip())
+            if not line.strip().startswith(filters):
+                unique_texts.add(line.strip())
+
     unique_text_list = list(unique_texts)
+
     with open(output_file, "w") as file:
         for text in unique_text_list:
-            if text not in filters:
-                file.write(text + "\n")
+            file.write(text + "\n")
 
 
 if __name__ == "__main__":
