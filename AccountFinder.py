@@ -591,7 +591,6 @@ filters = (
 )
 
 
-
 def read_urls_from_file(file_path):
     with open(file_path, "r") as file:
         return [url.strip() for url in file.readlines()]
@@ -635,6 +634,7 @@ def choose_option():
         else:
             print("Invalid input. Please choose 1, 2, 3, 4, or 5.")
 
+
 def exiting():
     unique_texts = set()
     with open(output_file, "r") as file:
@@ -662,7 +662,7 @@ def process_url(url, pattern, output_file, choice):
                 if re.findall(pattern, plain_text):
                     file.writelines(url + "\n")
             elif choice == "5":
-                custom_found_items = re.findall(pattern, plain_text) 
+                custom_found_items = re.findall(pattern, plain_text)
                 for item in custom_found_items:
                     file.writelines(url + " " + item + "\n")
             else:
@@ -672,6 +672,7 @@ def process_url(url, pattern, output_file, choice):
 
     except requests.exceptions.RequestException:
         print("Couldn't connect to", url)
+
 
 def exiting(output_file, filters):
     unique_texts = set()
@@ -684,17 +685,12 @@ def exiting(output_file, filters):
             if text not in filters:
                 file.write(text + "\n")
 
+
 if __name__ == "__main__":
     urls = read_urls_from_file("links.txt")
     pattern, output_file, choice = choose_option()
-    
-    try:
-        with ThreadPoolExecutor(max_workers=2) as executor:
-            for url in urls:
-                executor.submit(process_url, url, pattern, output_file, choice)
-        
-        exiting(output_file, filters)
 
-    except KeyboardInterrupt:
-        exiting(output_file, filters)
-        print("Exiting due to KeyboardInterrupt")
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        for url in urls:
+            executor.submit(process_url, url, pattern, output_file, choice)
+    exiting(output_file, filters)
