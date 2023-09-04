@@ -690,7 +690,7 @@ if __name__ == "__main__":
     urls = read_urls_from_file("links.txt")
     pattern, output_file, choice = choose_option()
 
-    with ThreadPoolExecutor(max_workers=2) as executor:
+    with ThreadPoolExecutor(max_workers=3) as executor:
         for url in urls:
             executor.submit(process_url, url, pattern, output_file, choice)
     exiting(output_file, filters)
