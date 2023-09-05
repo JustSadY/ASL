@@ -699,7 +699,7 @@ def process_url(url, email, password, pattern, output_file, choice):
             elif choice == "5":
                 custom_found_items = re.findall(pattern, plain_text)
                 if custom_found_items:
-                    print(url + "\n")
+                    file.writelines(url + "\n")
                     for item in custom_found_items:
                         file.writelines(item + "\n")
             else:
