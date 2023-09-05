@@ -678,32 +678,32 @@ def process_url(url, email, password, pattern, output_file):
     try:
         print("Connecting to:", url)
         response = requests.get(url)
-        response.raise_for_status()
-        content = response.text
-        soup = BeautifulSoup(content, "html.parser")
-        plain_text = soup.get_text()
-        time.sleep(1)
+        if response.status_code == 200:
+            content = response.text
+            soup = BeautifulSoup(content, "html.parser")
+            plain_text = soup.get_text()
+            time.sleep(1)
 
-        with open(output_file, "a") as file:
-            if choice in ("3", "4"):
-                if re.findall(pattern, plain_text):
-                    file.writelines(url + "\n")
-                    custom_found_users = re.findall(email, plain_text)
-                    custom_found_passwords = re.findall(password, plain_text)
-                    for user_item, pass_item in zip(
-                        custom_found_users, custom_found_passwords
-                    ):
-                        file.writelines(f"{user_item}:{pass_item}\n")
-            elif choice == "5":
-                custom_found_items = re.findall(pattern, plain_text)
-                if custom_found_items:
-                    file.writelines(url + "\n")
-                    for item in custom_found_items:
+            with open(output_file, "a") as file:
+                if choice in ("3", "4"):
+                    if re.findall(pattern, plain_text):
+                        file.writelines(url + "\n")
+                        custom_found_users = re.findall(email, plain_text)
+                        custom_found_passwords = re.findall(password, plain_text)
+                        for user_item, pass_item in zip(
+                            custom_found_users, custom_found_passwords
+                        ):
+                            file.writelines(f"{user_item}:{pass_item}\n")
+                elif choice == "5":
+                    custom_found_items = re.findall(pattern, plain_text)
+                    if custom_found_items:
+                        file.writelines(url + "\n")
+                        for item in custom_found_items:
+                            file.writelines(item + "\n")
+                else:
+                    found_items = re.findall(pattern, plain_text)
+                    for item in found_items:
                         file.writelines(item + "\n")
-            else:
-                found_items = re.findall(pattern, plain_text)
-                for item in found_items:
-                    file.writelines(item + "\n")
 
     except requests.exceptions.RequestException:
         print("Couldn't connect to", url)
