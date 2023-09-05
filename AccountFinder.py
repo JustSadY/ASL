@@ -632,6 +632,7 @@ def read_urls_from_file(file_path):
 
 
 def choose_option():
+    global choice
     while True:
         choice = input(
             "1. Email:Password\n2. Username:Password\n3. Email - Password\n4. Username - Password\n5. Steam keys\n(Enter 'exit' to quit): "
@@ -643,7 +644,6 @@ def choose_option():
                 "none",
                 r"[A-Za-z0-9._%+-]+\@[A-Za-z]+\.[A-Za-z]+\:[A-Za-z0-9._%+-]{5,18}\w+",
                 "emails_passwords.txt",
-                "1",
             )
         elif choice == "2":
             return (
@@ -651,23 +651,21 @@ def choose_option():
                 "none",
                 r"[A-Za-z0-9]{4,}\:[A-Za-z0-9]{5,18}\w+",
                 "usernames_passwords.txt",
-                "2",
             )
         elif choice == "3":
             email = r"(?:[Ee][Mm][Aa][Iıİi][Ll]|[Ee][Pp][Oo][Ss][Tt][Aa]|[Ee]-[Pp][Oo][Ss][Tt][Aa]|[Ee]-[Ee][Mm][Aa][Iıİi][Ll])(?:[ ]|)(?:[:]|[=]|[-])(?:[ ]|)\s+(\w+[A-Za-z0-9._%+-]+\@[A-Za-z0-9]+\.[A-Za-z]+)\w+"
             password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss])(?:[ ]|)(?:[:]|[=]|[-])(?:[ ]|)\s+(\w+)"
-            return email, password, f"{email}|{password}", "custom_data.txt", "3"
+            return email, password, f"{email}|{password}", "custom_data.txt"
         elif choice == "4":
             email = r"(?:[Uu][Ss][Ee][Rr][Nn][Aa][Mm][Ee]|[Uu][Ss][Ee][Rr])(?:[ ]|)(?:[:]|[=]|[-])(?:[ ]|)\s+(\w+)"
             password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss])(?:[ ]|)(?:[:]|[=]|[-])(?:[ ]|)\s+(\w+)"
-            return email, password, f"{email}|{password}", "custom_data.txt", "4"
+            return email, password, f"{email}|{password}", "custom_data.txt"
         elif choice == "5":
             return (
                 "none",
                 "none",
                 r"[A-Za-z0-9]{3,}\-[A-Za-z0-9]{3,}\-[A-Za-z0-9-]{3,18}\w+",
                 "Steam_keys.txt",
-                "5",
             )
         elif choice in ("exit", "quit", "q"):
             print("Exiting the program.")
@@ -676,7 +674,7 @@ def choose_option():
             print("Invalid input. Please choose 1, 2, 3, 4, or 5.")
 
 
-def process_url(url, email, password, pattern, output_file, choice):
+def process_url(url, email, password, pattern, output_file):
     try:
         print("Connecting to:", url)
         response = requests.get(url)
@@ -727,17 +725,13 @@ def exiting(output_file, filters):
 
 if __name__ == "__main__":
     urls = read_urls_from_file("links.txt")
-    email, password, pattern, output_file, choice = choose_option()
+    email, password, pattern, output_file = choose_option()
     if choice == "1" or "2":
         with ThreadPoolExecutor(max_workers=3) as executor:
             for url in urls:
-                executor.submit(
-                    process_url, url, email, password, pattern, output_file, choice
-                )
+                executor.submit(process_url, url, email, password, pattern, output_file)
         exiting(output_file, filters)
     if choice == "3" or "4" or "5":
         with ThreadPoolExecutor(max_workers=3) as executor:
             for url in urls:
-                executor.submit(
-                    process_url, url, email, password, pattern, output_file, choice
-                )
+                executor.submit(process_url, url, email, password, pattern, output_file)
