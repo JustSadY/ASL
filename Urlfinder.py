@@ -47,7 +47,10 @@ filter = (
     "https://www.yandex.com",
     "https://discord.com/",
     "https://www.farming-simulator.com/",
-    "https://astroneer.space/"
+    "https://astroneer.space/",
+    "https://nl.wikipedia.org",
+    "https://pastebin.com/tools"
+
 )
 
 
@@ -225,6 +228,7 @@ def main():
         return
 
     while True:
+        global option
         option = input(
             "Please select the option you want to use:\n"
             "S for search\n"
@@ -281,9 +285,12 @@ def exiting():
 
     with open("links.txt", "w", encoding="utf-8") as file:
         for text in unique_text_list:
-            if not text.startswith(filter) and not text == "https://pastebin.com/" and "https://pastebin.com/faq":
-                file.write(text + "\n")
-
+            if option == "1":
+                if text.startswith("https://pastebin.com") or text.startswith("https://www.pastebin.com"):
+                    file.write(text + "\n")
+            else:
+                if not text.startswith(filter) and not text == "https://pastebin.com/" and "https://pastebin.com/faq":
+                    file.write(text + "\n")
 
 if __name__ == "__main__":
     try:
