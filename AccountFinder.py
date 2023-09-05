@@ -698,8 +698,10 @@ def process_url(url, email, password, pattern, output_file, choice):
                         file.writelines(f"{user_item}:{pass_item}\n")
             elif choice == "5":
                 custom_found_items = re.findall(pattern, plain_text)
-                for item in custom_found_items:
-                    file.writelines(url + " " + item + "\n")
+                if custom_found_items:
+                    print(url + "\n")
+                    for item in custom_found_items:
+                        file.writelines(item + "\n")
             else:
                 found_items = re.findall(pattern, plain_text)
                 for item in found_items:
