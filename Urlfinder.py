@@ -53,6 +53,7 @@ filter = (
     "https://www.reference.com",
     "https://www.askmediagroup.com",
     "https://help.askmediagroup.com",
+    "https://pastebin.com/login",
 )
 
 
@@ -130,22 +131,23 @@ def search_yandex(site, keyword):
 def search_ecosia(site, keyword):
     try:
         print(f"Ecosia: {keyword}")
-        time.sleep(1)
-        ecosia_url = (
-            f"https://www.ecosia.org/search?q={site}+{keyword.replace(' ', '+')}"
-        )
-        response = requests.get(ecosia_url, timeout=5, headers=headers)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, "html.parser")
-            link_elements = soup.find_all("a")
-            for link in link_elements:
-                href = link.get("href")
-                if (
-                    href
-                    and href.startswith("https://")
-                    and "ecosia" not in href.lower()
-                ):
-                    output_file.write(href + "\n")
+        for page in range(0, pages + 1):
+            time.sleep(1)
+            ecosia_url = f"https://www.ecosia.org/search?q={site}+{keyword.replace(' ', '+')}&p={page}"
+            response = requests.get(ecosia_url, timeout=5, headers=headers)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, "html.parser")
+                link_elements = soup.find_all("a")
+                for link in link_elements:
+                    href = link.get("href")
+                    if (
+                        href
+                        and href.startswith("https://")
+                        and "ecosia" not in href.lower()
+                    ):
+                        output_file.write(href + "\n")
+            else:
+                break
     except Exception as e:
         print(f"Error occurred during Ecosia search: {e}")
 
@@ -153,20 +155,21 @@ def search_ecosia(site, keyword):
 def search_yahoo(site, keyword):
     try:
         print(f"Yahoo: {keyword}")
-        time.sleep(1)
-        Yahoo_url = (
-            f"https://search.yahoo.com/search?p={site}+{keyword.replace(' ', '+')}"
-        )
-        response = requests.get(Yahoo_url, timeout=5, headers=headers)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, "html.parser")
-            link_elements = soup.find_all(
-                "span",
-                class_="d-ib p-abs t-0 l-0 fz-14 lh-20 fc-obsidian wr-bw ls-n pb-4",
-            )
-            for link in link_elements:
-                href = link.get_text().replace(" › ", "/")
-                output_file.write("https://" + href + "\n")
+        for page in range(0, pages + 1):
+            time.sleep(1)
+            Yahoo_url = f"https://search.yahoo.com/search?p={site}+{keyword.replace(' ', '+')}&b={((page) * 10)}"
+            response = requests.get(Yahoo_url, timeout=5, headers=headers)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, "html.parser")
+                link_elements = soup.find_all(
+                    "span",
+                    class_="d-ib p-abs t-0 l-0 fz-14 lh-20 fc-obsidian wr-bw ls-n pb-4",
+                )
+                for link in link_elements:
+                    href = link.get_text().replace(" › ", "/")
+                    output_file.write("https://" + href + "\n")
+            else:
+                break
     except Exception as e:
         print(f"Error occurred during Yahoo search: {e}")
 
@@ -196,7 +199,7 @@ def search_startpage(site, keyword):
         print(f"Startpage: {keyword}")
         time.sleep(1)
         task = StartPage()
-        task.search(f"{site} {keyword}", page=1)
+        task.search(f"{site} {keyword}", page=pages)
         for page_num, results in task.results.items():
             for res in results:
                 output_file.write(res["link"] + "\n")
@@ -228,18 +231,21 @@ def Search_Ramber(site, keyword):
 def Search_Ask(site, keyword):
     try:
         print(f"Ask: {keyword}")
-        time.sleep(1)
-        Ask_url = f"https://www.ask.com/web?q={site}+{keyword.replace(' ', '+')}"
-        response = requests.get(Ask_url, timeout=5, headers=headers)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, "html.parser")
-            link_elements = soup.find_all("a")
-            for link in link_elements:
-                href = link.get("href")
-                if href and href.startswith("https://"):
-                    output_file.write(href + "\n")
+        for page in range(0, pages + 1):
+            time.sleep(1)
+            Ask_url = f"https://www.ask.com/web?q={site}+{keyword.replace(' ', '+')}&page={page}"
+            response = requests.get(Ask_url, timeout=5, headers=headers)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, "html.parser")
+                link_elements = soup.find_all("a")
+                for link in link_elements:
+                    href = link.get("href")
+                    if href and href.startswith("https://"):
+                        output_file.write(href + "\n")
+            else:
+                break
     except Exception as e:
-        print(f"Error occurred during Google search: {e}")
+        print(f"Error occurred during Ask.com search: {e}")
 
 
 def main():
@@ -298,6 +304,12 @@ def main():
             break
         else:
             print("Invalid option.")
+
+    while True:
+        global pages
+        pages = int(input("Page:"))
+        if pages < 5:
+            break
 
     with open("word_list.txt", "r", encoding="utf-8") as keys:
         key = keys.read().split("\n")
