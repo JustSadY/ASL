@@ -49,8 +49,10 @@ filter = (
     "https://www.farming-simulator.com/",
     "https://astroneer.space/",
     "https://nl.wikipedia.org",
-    "https://pastebin.com/tools"
-
+    "https://pastebin.com/tools",
+    "https://www.reference.com",
+    "https://www.askmediagroup.com",
+    "https://help.askmediagroup.com",
 )
 
 
@@ -202,6 +204,44 @@ def search_startpage(site, keyword):
         print(f"Error occurred during StartPage search: {e}")
 
 
+def Search_Ramber(site, keyword):
+    try:
+        print(f"Ramber: {keyword}")
+        time.sleep(1)
+        Ramber_url = (
+            f"https://nova.rambler.ru/search?query={site}+{keyword.replace(' ', '+')}"
+        )
+        response = requests.get(Ramber_url, timeout=5, headers=headers)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, "html.parser")
+            link_elements = soup.find_all(
+                class_="Serp__url--3NdzA components__colored_link--9ft9T"
+            )
+            for link in link_elements:
+                href = link.get("href")
+                if href and href.startswith("https://"):
+                    output_file.write(href + "\n")
+    except Exception as e:
+        print(f"Error occurred during Google search: {e}")
+
+
+def Search_Ask(site, keyword):
+    try:
+        print(f"Ask: {keyword}")
+        time.sleep(1)
+        Ask_url = f"https://www.ask.com/web?q={site}+{keyword.replace(' ', '+')}"
+        response = requests.get(Ask_url, timeout=5, headers=headers)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, "html.parser")
+            link_elements = soup.find_all("a")
+            for link in link_elements:
+                href = link.get("href")
+                if href and href.startswith("https://"):
+                    output_file.write(href + "\n")
+    except Exception as e:
+        print(f"Error occurred during Google search: {e}")
+
+
 def main():
     global output_file
     config = configparser.ConfigParser()
@@ -216,6 +256,8 @@ def main():
         "Yahoo": search_yahoo,
         "Ecosia": search_ecosia,
         "Aol": search_aol,
+        "Ramber": Search_Ramber,
+        "Ask": Search_Ask,
     }
 
     selected_search_engines = []
@@ -286,11 +328,18 @@ def exiting():
     with open("links.txt", "w", encoding="utf-8") as file:
         for text in unique_text_list:
             if option == "1":
-                if text.startswith("https://pastebin.com") or text.startswith("https://www.pastebin.com"):
+                if text.startswith("https://pastebin.com") or text.startswith(
+                    "https://www.pastebin.com"
+                ):
                     file.write(text + "\n")
             else:
-                if not text.startswith(filter) and not text == "https://pastebin.com/" and "https://pastebin.com/faq":
+                if (
+                    not text.startswith(filter)
+                    and not text == "https://pastebin.com/"
+                    and "https://pastebin.com/faq"
+                ):
                     file.write(text + "\n")
+
 
 if __name__ == "__main__":
     try:
