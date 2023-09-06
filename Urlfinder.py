@@ -54,6 +54,7 @@ filter = (
     "https://www.askmediagroup.com",
     "https://help.askmediagroup.com",
     "https://pastebin.com/login",
+    "https://steamcommunity.com/login",
 )
 
 
@@ -307,9 +308,12 @@ def main():
 
     while True:
         global pages
-        pages = int(input("Page:"))
-        if pages < 5:
-            break
+        try:
+            pages = int(input("Pages: "))
+            if pages < 5:
+                break
+        except:
+            print("Invalid input. Please enter a valid number.")
 
     with open("word_list.txt", "r", encoding="utf-8") as keys:
         key = keys.read().split("\n")
