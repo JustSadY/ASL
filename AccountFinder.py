@@ -1,4 +1,5 @@
 import re
+import os
 import requests
 import time
 from bs4 import BeautifulSoup
@@ -726,6 +727,8 @@ def exiting(output_file, filters):
 if __name__ == "__main__":
     urls = read_urls_from_file("links.txt")
     email, password, pattern, output_file = choose_option()
+    if not os.path.exists(output_file):
+        open(output_file, 'w').close()
     if choice == "1" or "2":
         with ThreadPoolExecutor(max_workers=3) as executor:
             for url in urls:
