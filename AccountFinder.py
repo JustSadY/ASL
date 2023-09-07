@@ -653,7 +653,7 @@ def choose_option():
                 "usernames_passwords.txt",
             )
         elif choice == "3":
-            email = r"(?:[Ee][Mm][Aa][Iıİi][Ll]|[Ee][Pp][Oo][Ss][Tt][Aa]|[Ee]-[Pp][Oo][Ss][Tt][Aa]|[Ee]-[Ee][Mm][Aa][Iıİi][Ll])(?:[ ]|)(?:[:]|[=]|[-])(?:[ ]|)\s+(\w+[A-Za-z0-9._%+-]+\@[A-Za-z0-9]+\.[A-Za-z]+)\w+"
+            email = r"(?:[Ee][Mm][Aa][Iıİi][Ll]|[Ee][Pp][Oo][Ss][Tt][Aa]|[Ee]-[Pp][Oo][Ss][Tt][Aa]|[Ee]-[Ee][Mm][Aa][Iıİi][Ll])(?:[ ]|)(?:[:]|[=]|[-])(?:[ ]|)\s+(\w+[A-Za-z0-9._%+-]+\@[A-Za-z0-9]+\.[A-Za-z]+)"
             password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss])(?:[ ]|)(?:[:]|[=]|[-])(?:[ ]|)\s+(\w+)"
             return email, password, f"{email}|{password}", "custom_data.txt"
         elif choice == "4":
@@ -693,7 +693,7 @@ def process_url(url, email, password, pattern, output_file):
                         for user_item, pass_item in zip(
                             custom_found_users, custom_found_passwords
                         ):
-                            file.writelines(f"{user_item}:{pass_item}\n")
+                            file.writelines(f'{user_item.replace("Password" or "password" or "pass" or "Pass", "")}:{pass_item}\n')
                 elif choice == "5":
                     custom_found_items = re.findall(pattern, plain_text)
                     if custom_found_items:
@@ -731,7 +731,7 @@ if __name__ == "__main__":
             for url in urls:
                 executor.submit(process_url, url, email, password, pattern, output_file)
         exiting(output_file, filters)
-    if choice == "3" or "4" or "5":
+    elif choice == "3" or "4" or "5":
         with ThreadPoolExecutor(max_workers=3) as executor:
             for url in urls:
                 executor.submit(process_url, url, email, password, pattern, output_file)
