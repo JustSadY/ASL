@@ -55,6 +55,7 @@ filter = (
     "https://help.askmediagroup.com",
     "https://pastebin.com/login",
     "https://steamcommunity.com/login",
+    "https://www.netflix.com",
 )
 
 

@@ -665,7 +665,7 @@ def choose_option():
             return (
                 "none",
                 "none",
-                r"[A-Za-z0-9]{3,}\-[A-Za-z0-9]{3,}\-[A-Za-z0-9-]{3,18}\w+",
+                r"[A-Za-z0-9]{3,6}\-[A-Za-z0-9]{3,6}\-[A-Za-z0-9-]{3,6}\w+",
                 "Steam_keys.txt",
             )
         elif choice in ("exit", "quit", "q"):
@@ -694,13 +694,40 @@ def process_url(url, email, password, pattern, output_file):
                         for user_item, pass_item in zip(
                             custom_found_users, custom_found_passwords
                         ):
-                            file.writelines(f'{user_item.replace("Password" or "password" or "pass" or "Pass", "")}:{pass_item}\n')
+                            file.writelines(
+                                f'{user_item.replace("Password" or "password" or "pass" or "Pass", "")}:{pass_item}\n'
+                            )
                 elif choice == "5":
-                    custom_found_items = re.findall(pattern, plain_text)
-                    if custom_found_items:
-                        file.writelines(url + "\n")
-                        for item in custom_found_items:
-                            file.writelines(item + "\n")
+                    if url.startswith("https://www.realsteamkeys.com/"):
+                        custom_found_items = soup.find_all("td", class_="column-3")
+                        if custom_found_items:
+                            file.writelines(url + "\n")
+                            for item in [
+                                item.text.strip() for item in custom_found_items
+                            ]:
+                                file.writelines(item + "\n")
+                    elif url.startswith("https://www.validsteamkeys.com/"):
+                        custom_found_items = soup.find_all("td", class_="column-2")
+                        if custom_found_items:
+                            file.writelines(url + "\n")
+                            for item in [
+                                item.text.strip() for item in custom_found_items
+                            ]:
+                                file.writelines(item.replace("DX:", "") + "\n")
+                    elif url.startswith("https://niftbyte.com/"):
+                        custom_found_items = soup.find_all("td", class_="column-3")
+                        if custom_found_items:
+                            file.writelines(url + "\n")
+                            for item in [
+                                item.text.strip() for item in custom_found_items
+                            ]:
+                                file.writelines(item.replace("DX:", "") + "\n")
+                    else:
+                        custom_found_items = re.findall(pattern, plain_text)
+                        if custom_found_items:
+                            file.writelines(url + "\n")
+                            for item in custom_found_items:
+                                file.writelines(item.replace("Steam", "") + "\n")
                 else:
                     found_items = re.findall(pattern, plain_text)
                     for item in found_items:
@@ -728,12 +755,13 @@ if __name__ == "__main__":
     urls = read_urls_from_file("links.txt")
     email, password, pattern, output_file = choose_option()
     if not os.path.exists(output_file):
-        open(output_file, 'w').close()
+        open(output_file, "w").close()
     if choice == "1" or "2":
         with ThreadPoolExecutor(max_workers=3) as executor:
             for url in urls:
                 executor.submit(process_url, url, email, password, pattern, output_file)
-        exiting(output_file, filters)
+            exiting(output_file, filters)
+
     elif choice == "3" or "4" or "5":
         with ThreadPoolExecutor(max_workers=3) as executor:
             for url in urls:
