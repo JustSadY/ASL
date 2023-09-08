@@ -680,8 +680,7 @@ def process_url(url, email, password, pattern, output_file):
         print("Connecting to:", url)
         response = requests.get(url)
         if response.status_code == 200:
-            content = response.text
-            soup = BeautifulSoup(content, "html.parser")
+            soup = BeautifulSoup(response.text, "html.parser")
             plain_text = soup.get_text()
             time.sleep(1)
 

@@ -82,11 +82,13 @@ def search_ddgs(site, keyword):
 def search_google(site, keyword):
     print(f"Google: {keyword}")
     time.sleep(1)
-    Google_url = f"https://www.google.com/search?q={site}+{keyword.replace(' ', '+')}"
-    response = requests.get(Google_url, timeout=5, headers=headers)
+    response = requests.get(
+        f"https://www.google.com/search?q={site}+{keyword.replace(' ', '+')}",
+        timeout=5,
+        headers=headers,
+    )
     if response.status_code == 200:
-        soup = BeautifulSoup(response.text, "html.parser")
-        link_elements = soup.find_all(
+        link_elements = BeautifulSoup(response.text, "html.parser").find_all(
             "a", jscontroller="M9mgyc", jsname="qOiK6e", jsaction="rcuQ6b:npT2md"
         )
         for link in link_elements:
@@ -94,37 +96,43 @@ def search_google(site, keyword):
             if href and href.startswith("https://"):
                 output_file.write(href + "\n")
     else:
-        print("Not searching Google")
+        print("Not searching: Google")
 
 
 def search_bing(site, keyword):
     print(f"Bing: {keyword}")
     time.sleep(1)
-    Bing_url = f"https://www.bing.com/search?q={site}+{keyword.replace(' ', '+')}"
-    response = requests.get(Bing_url, timeout=5, headers=headers)
+    response = requests.get(
+        f"https://www.bing.com/search?q={site}+{keyword.replace(' ', '+')}",
+        timeout=5,
+        headers=headers,
+    )
     if response.status_code == 200:
-        soup = BeautifulSoup(response.text, "html.parser")
-        link_elements = soup.find_all("cite")
+        link_elements = BeautifulSoup(response.text, "html.parser").find_all("cite")
         for link in link_elements:
             output_file.write(link.get_text() + "\n")
     else:
-        print("Not searching Bing")
+        print("Not searching: Bing")
 
 
 def search_yandex(site, keyword):
     print(f"Yandex: {keyword}")
     time.sleep(1)
-    Yandex_url = f"https://yandex.com/search/?text={site}+{keyword.replace(' ', '+')}"
-    response = requests.get(Yandex_url, timeout=5, headers=headers)
+    response = requests.get(
+        f"https://yandex.com/search/?text={site}+{keyword.replace(' ', '+')}",
+        timeout=5,
+        headers=headers,
+    )
     if response.status_code == 200:
-        soup = BeautifulSoup(response.text, "html.parser")
-        link_elements = soup.find_all("a", tabindex="0")
+        link_elements = BeautifulSoup(response.text, "html.parser").find_all(
+            "a", tabindex="0"
+        )
         for link in link_elements:
             href = link.get("href")
             if href and href.startswith("https://"):
                 output_file.write(href + "\n")
     else:
-        print("Not searching Yandex")
+        print("Not searching: Yandex")
 
 
 def search_ecosia(site, keyword):
@@ -132,11 +140,13 @@ def search_ecosia(site, keyword):
         print(f"Ecosia: {keyword}")
         for page in range(0, pages + 1):
             time.sleep(1)
-            ecosia_url = f"https://www.ecosia.org/search?q={site}+{keyword.replace(' ', '+')}&p={page}"
-            response = requests.get(ecosia_url, timeout=5, headers=headers)
+            response = requests.get(
+                f"https://www.ecosia.org/search?q={site}+{keyword.replace(' ', '+')}&p={page}",
+                timeout=5,
+                headers=headers,
+            )
             if response.status_code == 200:
-                soup = BeautifulSoup(response.text, "html.parser")
-                link_elements = soup.find_all(
+                link_elements = BeautifulSoup(response.text, "html.parser").find_all(
                     "a", class_="result__link link link--as-a link--color-result"
                 )
                 for link in link_elements:
@@ -153,11 +163,13 @@ def search_yahoo(site, keyword):
         print(f"Yahoo: {keyword}")
         for page in range(0, pages + 1):
             time.sleep(1)
-            Yahoo_url = f"https://search.yahoo.com/search?p={site}+{keyword.replace(' ', '+')}&b={((page) * 10)}"
-            response = requests.get(Yahoo_url, timeout=5, headers=headers)
+            response = requests.get(
+                f"https://search.yahoo.com/search?p={site}+{keyword.replace(' ', '+')}&b={((page) * 10)}",
+                timeout=5,
+                headers=headers,
+            )
             if response.status_code == 200:
-                soup = BeautifulSoup(response.text, "html.parser")
-                link_elements = soup.find_all(
+                link_elements = BeautifulSoup(response.text, "html.parser").find_all(
                     "span",
                     class_="d-ib p-abs t-0 l-0 fz-14 lh-20 fc-obsidian wr-bw ls-n pb-4",
                 )
@@ -174,13 +186,13 @@ def search_aol(site, keyword):
     try:
         print(f"Aol: {keyword}")
         time.sleep(1)
-        aol_url = (
-            f"https://search.aol.com/aol/search?q={site}+{keyword.replace(' ', '+')}"
+        response = requests.get(
+            f"https://search.aol.com/aol/search?q={site}+{keyword.replace(' ', '+')}",
+            timeout=5,
+            headers=headers,
         )
-        response = requests.get(aol_url, timeout=5, headers=headers)
         if response.status_code == 200:
-            soup = BeautifulSoup(response.text, "html.parser")
-            link_elements = soup.find_all(
+            link_elements = BeautifulSoup(response.text, "html.parser").find_all(
                 "span", class_="fz-ms fw-m fc-12th wr-bw lh-17"
             )
             for link in link_elements:
@@ -207,13 +219,13 @@ def Search_Ramber(site, keyword):
     try:
         print(f"Ramber: {keyword}")
         time.sleep(1)
-        Ramber_url = (
-            f"https://nova.rambler.ru/search?query={site}+{keyword.replace(' ', '+')}"
+        response = requests.get(
+            f"https://nova.rambler.ru/search?query={site}+{keyword.replace(' ', '+')}",
+            timeout=5,
+            headers=headers,
         )
-        response = requests.get(Ramber_url, timeout=5, headers=headers)
         if response.status_code == 200:
-            soup = BeautifulSoup(response.text, "html.parser")
-            link_elements = soup.find_all(
+            link_elements = BeautifulSoup(response.text, "html.parser").find_all(
                 class_="Serp__url--3NdzA components__colored_link--9ft9T"
             )
             for link in link_elements:
@@ -229,11 +241,13 @@ def Search_Ask(site, keyword):
         print(f"Ask: {keyword}")
         for page in range(0, pages + 1):
             time.sleep(1)
-            Ask_url = f"https://www.ask.com/web?q={site}+{keyword.replace(' ', '+')}&page={page}"
-            response = requests.get(Ask_url, timeout=5, headers=headers)
+            response = requests.get(
+                f"https://www.ask.com/web?q={site}+{keyword.replace(' ', '+')}&page={page}",
+                timeout=5,
+                headers=headers,
+            )
             if response.status_code == 200:
-                soup = BeautifulSoup(response.text, "html.parser")
-                link_elements = soup.find_all(
+                link_elements = BeautifulSoup(response.text, "html.parser").find_all(
                     "a", class_="PartialSearchResults-item-title-link result-link"
                 )
                 for link in link_elements:
