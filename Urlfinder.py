@@ -56,6 +56,10 @@ filter = (
     "https://pastebin.com/login",
     "https://steamcommunity.com/login",
     "https://www.netflix.com",
+    "https://steamcommunity.com",
+    "https://help.steampowered.com/",
+    "https://www.twitch.tv/",
+    "http://help.steampowered.com",
 )
 
 
@@ -76,58 +80,51 @@ def search_ddgs(site, keyword):
 
 
 def search_google(site, keyword):
-    try:
-        print(f"Google: {keyword}")
-        time.sleep(1)
-        Google_url = (
-            f"https://www.google.com/search?q={site}+{keyword.replace(' ', '+')}"
+    print(f"Google: {keyword}")
+    time.sleep(1)
+    Google_url = f"https://www.google.com/search?q={site}+{keyword.replace(' ', '+')}"
+    response = requests.get(Google_url, timeout=5, headers=headers)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, "html.parser")
+        link_elements = soup.find_all(
+            "a", jscontroller="M9mgyc", jsname="qOiK6e", jsaction="rcuQ6b:npT2md"
         )
-        response = requests.get(Google_url, timeout=5, headers=headers)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, "html.parser")
-            link_elements = soup.find_all("a")
-            for link in link_elements:
-                href = link.get("href")
-                if href and href.startswith("https://"):
-                    output_file.write(href + "\n")
-    except Exception as e:
-        print(f"Error occurred during Google search: {e}")
+        for link in link_elements:
+            href = link.get("href")
+            if href and href.startswith("https://"):
+                output_file.write(href + "\n")
+    else:
+        print("Not searching Google")
 
 
 def search_bing(site, keyword):
-    try:
-        print(f"Bing: {keyword}")
-        time.sleep(1)
-        Bing_url = f"https://www.bing.com/search?q={site}+{keyword.replace(' ', '+')}"
-        response = requests.get(Bing_url, timeout=5, headers=headers)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, "html.parser")
-            link_elements = soup.find_all("a")
-            for link in link_elements:
-                href = link.get("href")
-                if href and href.startswith("https://"):
-                    output_file.write(href + "\n")
-    except Exception as e:
-        print(f"Error occurred during Google search: {e}")
+    print(f"Bing: {keyword}")
+    time.sleep(1)
+    Bing_url = f"https://www.bing.com/search?q={site}+{keyword.replace(' ', '+')}"
+    response = requests.get(Bing_url, timeout=5, headers=headers)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, "html.parser")
+        link_elements = soup.find_all("cite")
+        for link in link_elements:
+            output_file.write(link.get_text() + "\n")
+    else:
+        print("Not searching Bing")
 
 
 def search_yandex(site, keyword):
-    try:
-        print(f"Yandex: {keyword}")
-        time.sleep(1)
-        Yandex_url = (
-            f"https://yandex.com/search/?text={site}+{keyword.replace(' ', '+')}"
-        )
-        response = requests.get(Yandex_url, timeout=5, headers=headers)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, "html.parser")
-            link_elements = soup.find_all("a")
-            for link in link_elements:
-                href = link.get("href")
-                if href and href.startswith("https://"):
-                    output_file.write(href + "\n")
-    except Exception as e:
-        print(f"Error occurred during Google search: {e}")
+    print(f"Yandex: {keyword}")
+    time.sleep(1)
+    Yandex_url = f"https://yandex.com/search/?text={site}+{keyword.replace(' ', '+')}"
+    response = requests.get(Yandex_url, timeout=5, headers=headers)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, "html.parser")
+        link_elements = soup.find_all("a", tabindex="0")
+        for link in link_elements:
+            href = link.get("href")
+            if href and href.startswith("https://"):
+                output_file.write(href + "\n")
+    else:
+        print("Not searching Yandex")
 
 
 def search_ecosia(site, keyword):
@@ -139,15 +136,12 @@ def search_ecosia(site, keyword):
             response = requests.get(ecosia_url, timeout=5, headers=headers)
             if response.status_code == 200:
                 soup = BeautifulSoup(response.text, "html.parser")
-                link_elements = soup.find_all("a")
+                link_elements = soup.find_all(
+                    "a", class_="result__link link link--as-a link--color-result"
+                )
                 for link in link_elements:
                     href = link.get("href")
-                    if (
-                        href
-                        and href.startswith("https://")
-                        and "ecosia" not in href.lower()
-                    ):
-                        output_file.write(href + "\n")
+                    output_file.write(href + "\n")
             else:
                 break
     except Exception as e:
@@ -227,7 +221,7 @@ def Search_Ramber(site, keyword):
                 if href and href.startswith("https://"):
                     output_file.write(href + "\n")
     except Exception as e:
-        print(f"Error occurred during Google search: {e}")
+        print(f"Error occurred during Ramber search: {e}")
 
 
 def Search_Ask(site, keyword):
@@ -239,7 +233,9 @@ def Search_Ask(site, keyword):
             response = requests.get(Ask_url, timeout=5, headers=headers)
             if response.status_code == 200:
                 soup = BeautifulSoup(response.text, "html.parser")
-                link_elements = soup.find_all("a")
+                link_elements = soup.find_all(
+                    "a", class_="PartialSearchResults-item-title-link result-link"
+                )
                 for link in link_elements:
                     href = link.get("href")
                     if href and href.startswith("https://"):
