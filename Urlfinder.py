@@ -307,7 +307,7 @@ def main():
         global pages
         try:
             pages = int(input("Pages: "))
-            if pages < 5:
+            if -1 < pages < 5:
                 break
         except:
             print("Invalid input. Please enter a valid number.")
