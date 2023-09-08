@@ -654,18 +654,18 @@ def choose_option():
                 "usernames_passwords.txt",
             )
         elif choice == "3":
-            email = r"(?:[Ee][Mm][Aa][Iıİi][Ll]|[Ee][Pp][Oo][Ss][Tt][Aa]|[Ee]-[Pp][Oo][Ss][Tt][Aa]|[Ee]-[Ee][Mm][Aa][Iıİi][Ll])(?:[ ]|)(?:[:]|[=]|[-])(?:[ ]|)\s+(\w+[A-Za-z0-9._%+-]+\@[A-Za-z0-9]+\.[A-Za-z]+)"
-            password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss])(?:[ ]|)(?:[:]|[=]|[-])(?:[ ]|)\s+(\w+)"
+            email = r"(?:[Ee][Mm][Aa][Iıİi][Ll]|[Ee][Pp][Oo][Ss][Tt][Aa]|[Ee]-[Pp][Oo][Ss][Tt][Aa]|[Ee]-[Ee][Mm][Aa][Iıİi][Ll]|[Aa][Cc][Cc][Oo][Uu][Nn][Tt]|[Aa][Cc][Cc])(?:[ ]|)(?:[:]|[=]|[-]|[ ]|)(?:[ ]|)+(\w+[A-Za-z0-9._%+-]+\@[A-Za-z0-9]+\.[A-Za-z]+)"
+            password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss])(?:[ ]|)(?:[:]|[=]|[-]|[ ]|)(?:[ ]|)+\s(\w[A-Za-z0-9^_.!]+)"
             return email, password, f"{email}|{password}", "custom_data.txt"
         elif choice == "4":
-            email = r"(?:[Uu][Ss][Ee][Rr][Nn][Aa][Mm][Ee]|[Uu][Ss][Ee][Rr])(?:[ ]|)(?:[:]|[=]|[-])(?:[ ]|)\s+(\w+)"
-            password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss])(?:[ ]|)(?:[:]|[=]|[-])(?:[ ]|)\s+(\w+)"
+            email = r"(?:[Uu][Ss][Ee][Rr][Nn][Aa][Mm][Ee]|[Uu][Ss][Ee][Rr]|[Aa][Cc][Cc][Oo][Uu][Nn][Tt]|[Aa][Cc][Cc]|\s[İiıI][Dd])(?:[ ]|)(?:[:]|[=]|[-]|[ ]|)(?:[ ]|)+(\w[A-Za-z0-9_.!]+)"
+            password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss])(?:[ ]|)(?:[:]|[=]|[-]|[ ]|)(?:[ ]|)+\s(\w[A-Za-z0-9^_.!]+)"
             return email, password, f"{email}|{password}", "custom_data.txt"
         elif choice == "5":
             return (
                 "none",
                 "none",
-                r"[A-Za-z0-9]{3,6}\-[A-Za-z0-9]{3,6}\-[A-Za-z0-9-]{3,6}\w+",
+                r"[A-Za-z0-9]{3,}\-[A-Za-z0-9]{3,6}\-[A-Za-z0-9-]{3,}\w+",
                 "Steam_keys.txt",
             )
         elif choice in ("exit", "quit", "q"):
@@ -686,16 +686,38 @@ def process_url(url, email, password, pattern, output_file):
 
             with open(output_file, "a") as file:
                 if choice in ("3", "4"):
-                    if re.findall(pattern, plain_text):
-                        file.writelines(url + "\n")
-                        custom_found_users = re.findall(email, plain_text)
-                        custom_found_passwords = re.findall(password, plain_text)
-                        for user_item, pass_item in zip(
-                            custom_found_users, custom_found_passwords
-                        ):
-                            file.writelines(
-                                f'{user_item.replace("Password" or "password" or "pass" or "Pass", "")}:{pass_item}\n'
-                            )
+                    if url.startswith("https://pastebin.com/"):
+                        if re.findall(pattern, plain_text):
+                            file.writelines(url + "\n")
+                            for element in BeautifulSoup(
+                                response.text, "html.parser"
+                            ).find_all(class_="de1"):
+                                custom_found_users = re.findall(
+                                    email, element.get_text()
+                                )
+                                custom_found_passwords = re.findall(
+                                    password, element.get_text()
+                                )
+                                if custom_found_users and custom_found_passwords:
+                                    file.writelines(
+                                        f"{custom_found_users[0]}:{custom_found_passwords[0]}\n"
+                                    )
+                                elif custom_found_users:
+                                    file.writelines(f"{custom_found_users[0]}:")
+                                elif custom_found_passwords:
+                                    file.writelines(f"{custom_found_passwords[0]}\n")
+
+                    else:
+                        if re.findall(pattern, plain_text):
+                            file.writelines(url + "\n")
+                            custom_found_users = re.findall(email, plain_text)
+                            custom_found_passwords = re.findall(password, plain_text)
+                            for user_item, pass_item in zip(
+                                custom_found_users, custom_found_passwords
+                            ):
+                                file.writelines(
+                                    f'{user_item.replace("Password" or "password" or "pass" or "Pass", "")}:{pass_item}\n'
+                                )
                 elif choice == "5":
                     if url.startswith("https://www.realsteamkeys.com/"):
                         custom_found_items = soup.find_all("td", class_="column-3")
