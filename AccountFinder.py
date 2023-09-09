@@ -689,23 +689,15 @@ def process_url(url, email, password, pattern, output_file):
                     if url.startswith("https://pastebin.com/"):
                         if re.findall(pattern, plain_text):
                             file.writelines(url + "\n")
-                            for element in BeautifulSoup(
-                                response.text, "html.parser"
-                            ).find_all(class_="de1"):
-                                custom_found_users = re.findall(
-                                    email, element.get_text()
-                                )
-                                custom_found_passwords = re.findall(
-                                    password, element.get_text()
-                                )
-                                if custom_found_users and custom_found_passwords:
-                                    file.writelines(
-                                        f"{custom_found_users[0]}:{custom_found_passwords[0]}\n"
-                                    )
-                                elif custom_found_users:
-                                    file.writelines(f"{custom_found_users[0]}:")
-                                elif custom_found_passwords:
-                                    file.writelines(f"{custom_found_passwords[0]}\n")
+                            acc = []
+                            for element in soup.find_all(class_="de1"):
+                                acc.append(element.get_text())
+                            custom_found_users = re.findall(email, " ".join(acc))
+                            custom_found_passwords = re.findall(password, " ".join(acc))
+                            for user_item, pass_item in zip(
+                                custom_found_users, custom_found_passwords
+                            ):
+                                file.writelines(f"{user_item}:{pass_item}\n")
 
                     else:
                         if re.findall(pattern, plain_text):
