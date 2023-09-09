@@ -655,11 +655,11 @@ def choose_option():
             )
         elif choice == "3":
             email = r"(?:[Ee][Mm][Aa][Iıİi][Ll]|[Ee][Pp][Oo][Ss][Tt][Aa]|[Ee]-[Pp][Oo][Ss][Tt][Aa]|[Ee]-[Ee][Mm][Aa][Iıİi][Ll]|[Aa][Cc][Cc][Oo][Uu][Nn][Tt]|[Aa][Cc][Cc])(?:[ ]|)(?:[:]|[=]|[-]|[ ]|)(?:[ ]|)+(\w+[A-Za-z0-9._%+-]+\@[A-Za-z0-9]+\.[A-Za-z]+)"
-            password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss])(?:[ ]|)(?:[:]|[=]|[-]|[ ]|)(?:[ ]|)+\s(\w[A-Za-z0-9^_.!]+)"
+            password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss])(?:[ ]|)(?:[:]|[=]|[-]|[ ]|)(?:[ ]|)+(\w[A-Za-z0-9^_.!+-:%]+)"
             return email, password, f"{email}|{password}", "custom_data.txt"
         elif choice == "4":
-            email = r"(?:[Uu][Ss][Ee][Rr][Nn][Aa][Mm][Ee]|[Uu][Ss][Ee][Rr]|[Aa][Cc][Cc][Oo][Uu][Nn][Tt]|[Aa][Cc][Cc]|\s[İiıI][Dd])(?:[ ]|)(?:[:]|[=]|[-]|[ ]|)(?:[ ]|)+(\w[A-Za-z0-9_.!]+)"
-            password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss])(?:[ ]|)(?:[:]|[=]|[-]|[ ]|)(?:[ ]|)+\s(\w[A-Za-z0-9^_.!]+)"
+            email = r"(?:[Uu][Ss][Ee][Rr][Nn][Aa][Mm][Ee]|[Uu][Ss][Ee][Rr]|[Aa][Cc][Cc][Oo][Uu][Nn][Tt]|\b[Aa][Cc][Cc]\b|\b[İiıI][Dd]\b|\b[Nn][Aa][Mm][Ee]|[Ll][Oo][Gg][İiıI][Nn])(?:\s*[:=­-]\s*)([+\-\w.]+)\s"
+            password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss]\b)(?:[ ]|)(?:[:]|[=]|[-]|[ ]|)(?:[ ]|)+(\w[A-Za-z0-9^_.!+-:%]+)"
             return email, password, f"{email}|{password}", "custom_data.txt"
         elif choice == "5":
             return (
@@ -694,10 +694,20 @@ def process_url(url, email, password, pattern, output_file):
                                 acc.append(element.get_text())
                             custom_found_users = re.findall(email, " ".join(acc))
                             custom_found_passwords = re.findall(password, " ".join(acc))
-                            for user_item, pass_item in zip(
-                                custom_found_users, custom_found_passwords
+                            if len(custom_found_users) == len(custom_found_passwords):
+                                for user_item, pass_item in zip(
+                                    custom_found_users, custom_found_passwords
+                                ):
+                                    file.writelines(f"{user_item}:{pass_item}\n")
+                            elif (
+                                len(custom_found_users)
+                                == len(custom_found_passwords) * 2
                             ):
-                                file.writelines(f"{user_item}:{pass_item}\n")
+                                for user_item, pass_item in zip(
+                                    custom_found_users[1 : len(custom_found_users) : 2],
+                                    custom_found_passwords,
+                                ):
+                                    file.writelines(f"{user_item}:{pass_item}\n")
 
                     else:
                         if re.findall(pattern, plain_text):
