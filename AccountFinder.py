@@ -658,7 +658,7 @@ def choose_option():
             password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss])(?:[ ]|)(?:[:]|[=]|[-]|[ ]|)(?:[ ]|)+(\w[A-Za-z0-9^_.!+-:%]+)"
             return email, password, f"{email}|{password}", "custom_data.txt"
         elif choice == "4":
-            email = r"(?:[Uu][Ss][Ee][Rr][Nn][Aa][Mm][Ee]|[Uu][Ss][Ee][Rr]|[Aa][Cc][Cc][Oo][Uu][Nn][Tt]|\b[Aa][Cc][Cc]\b|\b[İiıI][Dd]\b|\b[Nn][Aa][Mm][Ee]|[Ll][Oo][Gg][İiıI][Nn])(?:\s*[:=­-]\s*)([+\-\w.]+)\s"
+            email = r"(?:[Uu][Ss][Ee][Rr][Nn][Aa][Mm][Ee]|[Uu][Ss][Ee][Rr]|[Aa][Cc][Cc][Oo][Uu][Nn][Tt]|\b[Aa][Cc][Cc]\b|\b[İiıI][Dd]\b|\b[Nn][Aa][Mm][Ee]|[Ll][Oo][Gg][İiıI][Nn])(?:\s*[:=­-]\s*)([+\-\w.’]+)\s"
             password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss]\b)(?:[ ]|)(?:[:]|[=]|[-]|[ ]|)(?:[ ]|)+(\w[A-Za-z0-9^_.!+-:%]+)"
             return email, password, f"{email}|{password}", "custom_data.txt"
         elif choice == "5":
