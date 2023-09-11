@@ -247,33 +247,36 @@ def main():
 
     while True:
         global option
-        option = input(
-            "Please select the option you want to use:\n"
-            "S for search\n"
-            "1. Search only on Pastebin\n"
-            "2. Search only on Reddit\n"
-            "3. Search only on Youtube\n"
-            "4. Search on all sites\n"
-            "Choice: "
-        )
-        if option.lower() == "s":
-            r = input("site: ")
-            site = f"site:{r}"
-            break
-        elif option == "1":
-            site = "site:pastebin.com"
-            break
-        elif option == "2":
-            site = "site:reddit.com"
-            break
-        elif option == "3":
-            site = "site:youtube.com"
-            break
-        elif option == "4":
-            site = ""
-            break
-        else:
-            print("Invalid option.")
+        try:
+            option = input(
+                "Please select the option you want to use:\n"
+                "S for search\n"
+                "1. Search only on Pastebin\n"
+                "2. Search only on Reddit\n"
+                "3. Search only on Youtube\n"
+                "4. Search on all sites\n"
+                "Choice: "
+            )
+            if option.lower() == "s":
+                r = input("site: ")
+                site = f"site:{r}"
+                break
+            elif option == "1":
+                site = "site:pastebin.com"
+                break
+            elif option == "2":
+                site = "site:reddit.com"
+                break
+            elif option == "3":
+                site = "site:youtube.com"
+                break
+            elif option == "4":
+                site = ""
+                break
+            else:
+                print("Invalid option.")
+        except:
+            print("Invalid input. Please enter a valid number.")
 
     while True:
         global pages
@@ -342,5 +345,6 @@ if __name__ == "__main__":
         main()
         exiting()
     except KeyboardInterrupt:
+        print("Just Wait")
         exiting()
         print("exiting")
