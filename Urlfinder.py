@@ -11,68 +11,14 @@ headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36"
 }
 
-filter = (
-    "https://maps.",
-    "https://policies.",
-    "https://www.google.",
-    "https://translate.",
-    "https://www.bing.",
-    "https://yabs.",
-    "https://passport.",
-    "https://yandexwebcache",
-    "https://en.wikipedia.org/",
-    "https://r.search.yahoo.com/_ylt=",
-    "https://help.yahoo.com/",
-    "https://search.yahoo.com/search?ei=UTF-8&",
-    "https://r.search.yahoo.com/",
-    "https://news.",
-    "https://video.",
-    "https://images.",
-    "https://login.",
-    "https://mail.",
-    "https://support.",
-    "https://company.",
-    "https://pastebin.com/u/",
-    "https://yandex.com",
-    "https://go.microsoft.com/",
-    "https://cloud.yandex.",
-    "https://store.steampowered",
-    "https://steamdb.info",
-    "https://steamcharts.com",
-    "https://plati.market",
-    "https://www.nexusmods.com",
-    "https://search.aol.com/aol/",
-    "https://r.search.aol.com",
-    "https://shopping.search.aol.com/search",
-    "https://www.yandex.com",
-    "https://discord.com/",
-    "https://www.farming-simulator.com/",
-    "https://astroneer.space/",
-    "https://nl.wikipedia.org",
-    "https://pastebin.com/tools",
-    "https://www.reference.com",
-    "https://www.askmediagroup.com",
-    "https://help.askmediagroup.com",
-    "https://pastebin.com/login",
-    "https://steamcommunity.com/login",
-    "https://www.netflix.com",
-    "https://steamcommunity.com",
-    "https://help.steampowered.com/",
-    "https://www.twitch.tv/",
-    "http://help.steampowered.com",
-    "https://discord.com/",
-    "https://www.tiktok.com",
-    "https://store.steampowered.com",
-    "https://play.google.com/",
-    "http://blog.dota2.com",
-    "http://login.steampowered.com",
-    "https://afkgaming.com/",
-    "https://apkpure.com/",
-    "https://www.ask.com/",
-    "https://www.cdkeys.",
-    "https://www.gog.com",
-    "https://www.life123.com/",
-)
+
+filter = set()
+try:
+    with open("filter.txt", "r") as filtering:
+        for filters in filtering:
+            filter.add(filters.strip())
+except FileNotFoundError:
+    filter = set()
 
 
 def search_ddgs(site, keyword):
@@ -377,7 +323,9 @@ def exiting():
                 ):
                     unique_texts.add(line.strip())
             else:
-                if not line.startswith(filter) and not line == (
+                if not any(
+                    line.startswith(prefix) for prefix in filter
+                ) and not line == (
                     "https://pastebin.com/" and "https://pastebin.com/faq"
                 ):
                     unique_texts.add(line.strip())
