@@ -643,29 +643,29 @@ def choose_option():
             return (
                 "none",
                 "none",
-                r"[A-Za-z0-9._%+-]+\@[A-Za-z]+\.[A-Za-z]+\:[A-Za-z0-9._%+-]{5,18}\w+",
+                r"\w+[A-Za-z0-9._%+-]+\@[A-Za-z]+\.[A-Za-z]+\:[A-Za-z0-9^_.!+-:%$]{4,18}\b",
                 "emails_passwords.txt",
             )
         elif choice == "2":
             return (
                 "none",
                 "none",
-                r"[A-Za-z0-9]{4,}\:[A-Za-z0-9]{5,18}\w+",
+                r"\w+[A-Za-z0-9^_.!+-:%$]{4,}:[A-Za-z0-9^_.!+-:%$]{4,18}\b",
                 "usernames_passwords.txt",
             )
         elif choice == "3":
-            email = r"(?:[Ee][Mm][Aa][Iıİi][Ll]|[Ee][Pp][Oo][Ss][Tt][Aa]|[Ee]-[Pp][Oo][Ss][Tt][Aa]|[Ee]-[Ee][Mm][Aa][Iıİi][Ll]|[Aa][Cc][Cc][Oo][Uu][Nn][Tt]|[Aa][Cc][Cc])(?:[ ]|)(?:[:]|[=]|[-]|[ ]|)(?:[ ]|)+(\w+[A-Za-z0-9._%+-]+\@[A-Za-z0-9]+\.[A-Za-z]+)"
-            password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss])(?:[ ]|)(?:[:]|[=]|[-]|[ ]|)(?:[ ]|)+(\w[A-Za-z0-9^_.!+-:%]+)"
+            email = r"(?:[Ee][Mm][Aa][Iıİi][Ll]|[Ee][Pp][Oo][Ss][Tt][Aa]|[Ee]-[Pp][Oo][Ss][Tt][Aa]|[Ee]-[Ee][Mm][Aa][Iıİi][Ll]|[Aa][Cc][Cc][Oo][Uu][Nn][Tt]|[Aa][Cc][Cc]|[Ll][Oo][Gg][İiıI][Nn]|\b[İiıI][Dd]\b)(?:\s*[:= -]\s*)+(\w+[A-Za-z0-9._%+-]+\@[A-Za-z0-9]+\.[A-Za-z]+)"
+            password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss]\b)\s*[:= -]+\s*(\w[A-Za-z0-9^_.!+-:%$]+)"
             return email, password, f"{email}|{password}", "custom_data.txt"
         elif choice == "4":
-            email = r"(?:[Uu][Ss][Ee][Rr][Nn][Aa][Mm][Ee]|[Uu][Ss][Ee][Rr]|[Aa][Cc][Cc][Oo][Uu][Nn][Tt]|\b[Aa][Cc][Cc]\b|\b[İiıI][Dd]\b|\b[Nn][Aa][Mm][Ee]|[Ll][Oo][Gg][İiıI][Nn])(?:\s*[:=­-]\s*)([+\-\w.’]+)\s"
-            password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss]\b)(?:[ ]|)(?:[:]|[=]|[-]|[ ]|)(?:[ ]|)+(\w[A-Za-z0-9^_.!+-:%]+)"
+            email = r"(?:[Uu][Ss][Ee][Rr][Nn][Aa][Mm][Ee]|[Uu][Ss][Ee][Rr]|[Aa][Cc][Cc][Oo][Uu][Nn][Tt]|\b[Aa][Cc][Cc]\b|\b[İiıI][Dd]\b|\b[Nn][Aa][Mm][Ee]|[Ll][Oo][Gg][İiıI][Nn])(?:\s*[:= -]\s*)([+\-\w.’]+)\s"
+            password = r"(?:[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Pp][Aa][Ss][Ss]\b)\s*[:= -]+\s*(\w[A-Za-z0-9^_.!+-:%$]+)"
             return email, password, f"{email}|{password}", "custom_data.txt"
         elif choice == "5":
             return (
                 "none",
                 "none",
-                r"[A-Za-z0-9]{3,}\-[A-Za-z0-9]{3,6}\-[A-Za-z0-9-]{3,}\w+",
+                r"\w+[A-Za-z0-9]{3,}\-[A-Za-z0-9]{3,6}\-[A-Za-z0-9-]{3,7}\b",
                 "Steam_keys.txt",
             )
         elif choice in ("exit", "quit", "q"):
@@ -706,6 +706,11 @@ def process_url(url, email, password, pattern, output_file):
                                 for user_item, pass_item in zip(
                                     custom_found_users[1 : len(custom_found_users) : 2],
                                     custom_found_passwords,
+                                ):
+                                    file.writelines(f"{user_item}:{pass_item}\n")
+                            else:
+                                for user_item, pass_item in zip(
+                                    custom_found_users, custom_found_passwords
                                 ):
                                     file.writelines(f"{user_item}:{pass_item}\n")
 
