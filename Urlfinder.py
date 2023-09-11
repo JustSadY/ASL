@@ -60,6 +60,18 @@ filter = (
     "https://help.steampowered.com/",
     "https://www.twitch.tv/",
     "http://help.steampowered.com",
+    "https://discord.com/",
+    "https://www.tiktok.com",
+    "https://store.steampowered.com",
+    "https://play.google.com/",
+    "http://blog.dota2.com",
+    "http://login.steampowered.com",
+    "https://afkgaming.com/",
+    "https://apkpure.com/",
+    "https://www.ask.com/",
+    "https://www.cdkeys.",
+    "https://www.gog.com",
+    "https://www.life123.com/",
 )
 
 
@@ -349,23 +361,32 @@ def exiting():
     unique_texts = set()
     with open("links.txt", "r", encoding="utf-8") as file:
         for line in file:
-            unique_texts.add(line.strip())
+            if option == "1":
+                if line.startswith("https://pastebin.com") or line.startswith(
+                    "https://www.pastebin.com"
+                ):
+                    unique_texts.add(line.strip())
+            elif option == "2":
+                if line.startswith("https://reddit.com") or line.startswith(
+                    "https://www.reddit.com"
+                ):
+                    unique_texts.add(line.strip())
+            elif option == "3":
+                if line.startswith("https://youtube.com") or line.startswith(
+                    "https://www.youtube.com"
+                ):
+                    unique_texts.add(line.strip())
+            else:
+                if not line.startswith(filter) and not line == (
+                    "https://pastebin.com/" and "https://pastebin.com/faq"
+                ):
+                    unique_texts.add(line.strip())
     unique_text_list = list(unique_texts)
+    unique_text_list.sort()
 
     with open("links.txt", "w", encoding="utf-8") as file:
         for text in unique_text_list:
-            if option == "1":
-                if text.startswith("https://pastebin.com") or text.startswith(
-                    "https://www.pastebin.com"
-                ):
-                    file.write(text + "\n")
-            else:
-                if (
-                    not text.startswith(filter)
-                    and not text == "https://pastebin.com/"
-                    and "https://pastebin.com/faq"
-                ):
-                    file.write(text + "\n")
+            file.write(text + "\n")
 
 
 if __name__ == "__main__":

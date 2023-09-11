@@ -771,7 +771,6 @@ def exiting(output_file, filters):
         for line in file:
             if not line.strip().startswith(filters):
                 unique_texts.add(line.strip())
-
     unique_text_list = list(unique_texts)
 
     with open(output_file, "w") as file:
