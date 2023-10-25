@@ -75,22 +75,26 @@ def search_bing(site, keyword):
 
 def search_yandex(site, keyword):
     print(f"Yandex: {keyword}")
-    time.sleep(1)
-    response = requests.get(
-        f"https://yandex.com/search/?text={site}+{keyword.replace(' ', '+')}",
-        timeout=5,
-        headers=headers,
-    )
-    if response.status_code == 200:
-        link_elements = BeautifulSoup(response.text, "html.parser").find_all(
-            "a", tabindex="0"
-        )
-        for link in link_elements:
-            href = link.get("href")
-            if href and href.startswith("https://"):
-                output_file.write(href + "\n")
-    else:
-        print("Not searching: Yandex")
+    try:
+        for page in range(0, pages + 1):
+            time.sleep(1)
+            response = requests.get(
+                f"https://yandex.com/search/?text={site}+{keyword.replace(' ', '+')}&amp;p={page}",
+                timeout=5,
+                headers=headers,
+            )
+            if response.status_code == 200:
+                link_elements = BeautifulSoup(response.text, "html.parser").find_all(
+                    "a", tabindex="0"
+                )
+                for link in link_elements:
+                    href = link.get("href")
+                    if href and href.startswith("https://"):
+                        output_file.write(href + "\n")
+            else:
+                break
+    except Exception as e:
+        print(f"Error occurred during Yandex search: {e}")
 
 
 def search_ecosia(site, keyword):
