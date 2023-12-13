@@ -3,7 +3,7 @@ import requests
 import time
 from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
-from startpage import StartPage
+from startpage import startPage
 from concurrent.futures import ThreadPoolExecutor
 
 
@@ -168,7 +168,7 @@ def search_startpage(site, keyword):
     try:
         print(f"Startpage: {keyword}")
         time.sleep(1)
-        task = StartPage()
+        task = startPage()
         task.search(f"{site} {keyword}", page=pages)
         for page_num, results in task.results.items():
             for res in results:
