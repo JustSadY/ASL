@@ -3,7 +3,7 @@ import requests
 import time
 from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
-from startpage import startPage
+from startpage import Startpage
 from concurrent.futures import ThreadPoolExecutor
 
 
@@ -35,7 +35,6 @@ def search_ddgs(site, keyword):
                 output_file.write(duck["href"] + "\n")
         except Exception as e:
             print(f"Error occurred during Duckduckgo search: {e}")
-
 
 def search_google(site, keyword):
     print(f"Google: {keyword}")
@@ -71,6 +70,44 @@ def search_bing(site, keyword):
             output_file.write(link.get_text() + "\n")
     else:
         print("Not searching: Bing")
+        
+def Search_Baidu(site, keyword):
+    print(f"Swisscows: {keyword}")
+    time.sleep(1)
+    response = requests.get(
+        f"https://www.baidu.com/s?wd={site}+{keyword.replace(' ', '+')}",
+        timeout=5,
+        headers=headers,
+    )
+    if response.status_code == 200:
+        link_elements = BeautifulSoup(response.text, "html.parser").find_all("span", class_="c-color-gray")
+        for link in link_elements:
+            output_file.write("https://"+link.get_text())
+    else:
+        print("Not searching: Baidu")
+        
+
+def Search_Sogou(site, keyword):
+    print(f"Sogou: {keyword}")
+    time.sleep(1)
+
+    headers = {'User-Agent': 'Your User Agent'}  # Provide a valid User-Agent header
+
+    response = requests.get(
+        f"https://www.sogou.com/web?query={site}+{keyword.replace(' ', '+')}",
+        timeout=5,
+        headers=headers,
+    )
+
+    if response.status_code == 200:
+        link_elements = BeautifulSoup(response.text, "html.parser").find_all("a", target="_blank")
+        for link in link_elements:
+            href = link.get("href")
+            if href and href.startswith("/link?url="):  # Fix the typo here
+                output_file.write("https://www.sogou.com"+href)
+    else:
+        print("Error searching on Sogou")
+
 
 
 def search_yandex(site, keyword):
@@ -166,9 +203,9 @@ def search_aol(site, keyword):
 
 def search_startpage(site, keyword):
     try:
-        print(f"Startpage: {keyword}")
+        print(f"StartPage: {keyword}")
         time.sleep(1)
-        task = startPage()
+        task = Startpage()
         task.search(f"{site} {keyword}", page=pages)
         for page_num, results in task.results.items():
             for res in results:
@@ -238,6 +275,8 @@ def main():
         "Aol": search_aol,
         "Ramber": Search_Ramber,
         "Ask": Search_Ask,
+        "Baidu": Search_Baidu,
+        "Sogo": Search_Sogou,
     }
 
     selected_search_engines = []
